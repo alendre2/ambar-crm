@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Âmbar CRM</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; }
+        .text-nowrap-custom { white-space: nowrap; }
+        
+        .table-hover tbody tr:hover {
+            background-color: #ffffff; transform: scale(1.001);
+            transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            z-index: 10; position: relative;
+        }
+
+        a.link-nome { color: #212529; text-decoration: none; transition: color 0.2s; }
+        a.link-nome:hover { color: #0d6efd; text-decoration: underline; }
+
+        .card { border: none; transition: transform 0.2s; }
+        .btn-filter { transition: all 0.2s; font-size: 0.8rem; margin-bottom: 5px; }
+        .btn-filter:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <div th:replace="~{fragments/nav :: navbar}"></div>
+
+    <div class="container" style="max-width: 1300px; margin-top: 100px; margin-bottom: 50px;">
+        
+        <div class="row mb-4">
+            
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100" style="border-radius: 16px; background: linear-gradient(135deg, #2563eb, #1e40af); color: white;">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                        <i class="bi bi-people-fill mb-2" style="font-size: 2rem; opacity: 0.5;"></i>
+                        <h6 class="text-uppercase mb-1" style="opacity: 0.9;">Total de Clientes</h6>
+                        <h1 class="display-3 fw-bold mb-0" th:text="${totalClientes}">0</h1>
+                        <p class="mt-2 mb-0 badge bg-white text-primary rounded-pill px-3">Base Ativa</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100 bg-white" style="border-radius: 16px;">
+                    <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0" style="color: #db2777;">🎂 Aniversariantes</h6>
+                        <span class="badge bg-light text-dark border">Mês Atual</span>
+                    </div>
+                    <div class="card-body overflow-auto" style="max-height: 200px;">
+                        <div th:if="${aniversariantes.empty}" class="text-center text-muted mt-4">
+                            <small>Ninguém sopra as velinhas este mês.</small>
+                        </div>
+                        <div th:each="aniver : ${aniversariantes}" class="d-flex align-items-center justify-content-between mb-2 p-2 shadow-sm" style="background-color: #fff1f2; border-radius: 12px; border: 1px solid #ffe4e6;">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px; color: #db2777; font-weight: bold;">
+                                    <span th:text="${#temporals.format(aniver.dataNascimento, 'dd')}">01</span>
+                                </div>
+                                <div>
+                                    <strong style="font-size: 0.9em; display: block; color: #831843;" th:text="${aniver.nome}">Nome</strong>
+                                </div>
+                            </div>
+                            <a th:href="'https://wa.me/55' + ${aniver.telefoneLimpo}" target="_blank" class="btn btn-sm btn-success rounded-circle">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100 bg-white" style="border-radius: 16px;">
+                    <div class="card-body position-relative">
+                        <canvas id="statusChart" style="max-height: 200px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4 bg-white" style="border-radius: 16px;">
+            <div class="card-body p-4">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-5 mb-2 mb-md-0 d-flex gap-2">
+                        <a href="/novo" class="btn btn-primary btn-lg px-4 shadow-sm" style="border-radius: 12px; font-weight: 600;">
+                            <i class="bi bi-plus-lg me-1"></i> Novo
+                        </a>
+                        <a href="/exportar" class="btn btn-light border btn-lg px-3 shadow-sm" style="border-radius: 12px; color: #198754;">
+                            <i class="bi bi-file-earmark-excel-fill"></i> Excel
+                        </a>
+                    </div>
+                    <div class="col-md-7">
+                        <form action="/" method="get" class="d-flex shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                            <span class="input-group-text bg-white border-0 ps-3"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="busca" class="form-control form-control-lg border-0 ps-2" 
+                                   placeholder="Pesquisar..." th:value="${termoBusca}">
+                            <button type="submit" class="btn btn-primary px-4">Buscar</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start">
+                    <div class="me-3 text-muted pt-1" style="font-size: 1.2rem;"><i class="bi bi-funnel-fill"></i></div>
+                    <div class="d-flex flex-wrap gap-2 w-100">
+                        <a href="/" class="btn btn-filter rounded-pill px-3 py-1 fw-bold" th:classappend="${param.status == null} ? 'btn-dark' : 'btn-light border text-muted'">Todos</a>
+                        <a th:each="st : ${T(com.alendre.ambarcrm.model.StatusCliente).values()}"
+                           th:href="@{/(status=${st})}"
+                           class="btn btn-filter rounded-pill px-3 py-1 fw-medium"
+                           th:classappend="${param.status != null && param.status[0] == st.name()} ? 'btn-primary shadow' : 'btn-light border text-secondary'"
+                           th:text="${st.descricao}">Status</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 16px; overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead style="background-color: #f8f9fa;">
+                        <tr style="text-transform: uppercase; font-size: 0.75em; letter-spacing: 1px; color: #6c757d;">
+                            <th class="py-3 ps-4">Cliente</th>
+                            <th>Status</th>
+                            <th>Imóvel</th>
+                            <th>Contato</th>
+                            <th>Desde</th>
+                            <th class="text-end pe-4">Editar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${listaClientes.empty}"><td colspan="6" class="text-center py-5 text-muted">Nenhum cliente encontrado.</td></tr>
+
+                        <tr th:each="cliente : ${listaClientes}" style="border-bottom: 1px solid #f0f0f0;">
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3 text-white shadow-sm" style="width: 40px; height: 40px; font-weight: bold; background: linear-gradient(45deg, #4f46e5, #3b82f6);">
+                                        <span th:text="${#strings.substring(cliente.nome, 0, 1)}">A</span>
+                                    </div>
+                                    <div>
+                                        <a th:href="@{/detalhes/{id}(id=${cliente.id})}" class="fw-bold link-nome text-nowrap-custom" th:text="${cliente.nome}">Nome</a>
+                                        <div class="small text-muted" th:text="${cliente.email}">email</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-2 fw-normal text-nowrap-custom"
+                                      th:classappend="${cliente.status.name() == 'VENDA_FINALIZADA' || cliente.status.name() == 'ASSINATURA_CAIXA'} ? 'bg-success bg-opacity-10 text-success border border-success' : 
+                                                      (${cliente.status.name() == 'REPROVADO' || cliente.status.name() == 'DESISTIU'} ? 'bg-danger bg-opacity-10 text-danger border border-danger' : 
+                                                      (${cliente.status.name() == 'AGENDAMENTO'} ? 'bg-warning bg-opacity-10 text-dark border border-warning' : 'bg-light text-dark border'))"
+                                      th:text="${cliente.status.descricao}"></span>
+                            </td>
+                            <td class="text-secondary" th:text="${cliente.nomeImovel ?: '-'}"></td>
+                            <td>
+                                <a th:href="'https://wa.me/55' + ${cliente.telefoneLimpo}" target="_blank" class="text-decoration-none text-success fw-bold text-nowrap-custom">
+                                    <i class="bi bi-whatsapp"></i> <span th:text="${cliente.telefone}"></span>
+                                </a>
+                            </td>
+                            <td class="text-muted small text-nowrap-custom" th:text="${#temporals.format(cliente.dataCadastro, 'dd/MM/yy')}"></td>
+                            <td class="text-end pe-4">
+                                <a th:href="@{/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-light border text-primary rounded-circle shadow-sm" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"><i class="bi bi-pencil-fill"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        var ctx = document.getElementById('statusChart').getContext('2d');
+        var labels = /*[[${graficoLabels}]]*/ [];
+        var dados = /*[[${graficoDados}]]*/ [];
+        var cores = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: labels, datasets: [{ data: dados, backgroundColor: cores, borderWidth: 0, hoverOffset: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: true, position: 'right', labels: { boxWidth: 12, font: { size: 11 } } } } }
+        });
+    </script>
+</body>
+</html>

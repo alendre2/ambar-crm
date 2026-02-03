@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: header}"></head>
+
+<body>
+    <div th:replace="~{fragments/nav :: navbar}"></div>
+
+    <div class="container" style="max-width: 900px; margin-top: 30px;">
+        
+        <div class="card-header" style="background: #f8f9fa; padding: 20px; border-radius: 10px 10px 0 0; border: 1px solid #ddd;">
+            <h2 style="margin: 0; color: #2c3e50;">📝 Cadastro de Cliente</h2>
+        </div>
+
+        <div style="background: white; padding: 30px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 10px 10px;">
+            
+            <form th:action="@{/salvar}" method="post" th:object="${cliente}">
+                
+                <input type="hidden" th:field="*{id}">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                    
+                    <div style="grid-column: span 3; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; font-weight: bold; color: #007bff;">
+                        👤 Dados Pessoais
+                    </div>
+
+                    <div style="grid-column: span 2;">
+                        <label>Nome Completo:</label>
+                        <input type="text" th:field="*{nome}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+                    </div>
+
+                    <div>
+                        <label>Data Nascimento:</label>
+                        <input type="date" th:field="*{dataNascimento}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+
+                    <div>
+                        <label>CPF:</label>
+                        <input type="text" th:field="*{cpf}" oninput="mascaraCPF(this)" placeholder="000.000.000-00" maxlength="14" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+
+                    <div>
+                        <label>Telefone (WhatsApp):</label>
+                        <input type="text" th:field="*{telefone}" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" maxlength="15" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+
+                    <div>
+                        <label>E-mail:</label>
+                        <input type="email" th:field="*{email}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+
+                    <div style="grid-column: span 3; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; margin-top: 10px; font-weight: bold; color: #28a745;">
+                        🏠 Dados da Venda (Relatório)
+                    </div>
+
+                    <div>
+                        <label>Imóvel de Interesse:</label>
+                        <input type="text" th:field="*{nomeImovel}" placeholder="Ex: São João / A Definir" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+
+                    <div>
+                        <label>Fonte (Origem):</label>
+                        <select th:field="*{fonteCaptacao}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                            <option value="">Selecione...</option>
+                            <option value="INDICAÇÃO">Indicação</option>
+                            <option value="OLX">OLX</option>
+                            <option value="INSTAGRAM">Instagram</option>
+                            <option value="FACEBOOK">Facebook</option>
+                            <option value="PORTAL">Portal</option>
+                            <option value="OUTROS">Outros</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Detalhe Aprovação:</label>
+                        <input type="text" th:field="*{tipoAprovacao}" placeholder="Ex: Hom. Renda / Bacen" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+
+                    <div style="grid-column: span 3; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; margin-top: 10px; font-weight: bold; color: #fd7e14;">
+                        📊 Situação
+                    </div>
+
+                    <div>
+                        <label>Status Atual:</label>
+                        <select th:field="*{status}" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                            <option th:each="status : ${T(com.alendre.ambarcrm.model.StatusCliente).values()}"
+                                    th:value="${status}" th:text="${status.descricao}"></option>
+                        </select>
+                    </div>
+                    
+                     <div>
+                        <label>Data Cadastro:</label>
+                        <input type="date" th:field="*{dataCadastro}" style="width: 100%; padding: 10px; border: 1px solid #eee; background-color: #f9f9f9; cursor: not-allowed;" readonly>
+                    </div>
+
+                    <div style="grid-column: span 3;">
+                        <label>Observações Gerais:</label>
+                        <textarea th:field="*{observacao}" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <button type="submit" style="background-color: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; font-weight: bold;">Salvar ✅</button>
+                    <a href="/" style="background-color: #6c757d; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Voltar</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function mascaraCPF(i) {
+            var v = i.value;
+            if(isNaN(v[v.length-1])){ i.value = v.substring(0, v.length-1); return; }
+            i.setAttribute("maxlength", "14");
+            if (v.length == 3 || v.length == 7) i.value += ".";
+            if (v.length == 11) i.value += "-";
+        }
+        function mascaraTelefone(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            if (value.length > 6) { value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`; }
+            else if (value.length > 2) { value = `(${value.slice(0, 2)}) ${value.slice(2)}`; }
+            input.value = value;
+        }
+    </script>
+</body>
+</html>

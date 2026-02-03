@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header">
+    <meta charset="UTF-8">
+    <title>Ambar CRM</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/444/444695.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; }
+        .navbar { background-color: #2c3e50; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .container { max-width: 1400px; margin: 30px auto; padding: 20px; }
+        
+        /* DASHBOARD */
+        .dashboard-area { background-color: #2c3e50; padding: 30px; color: white; display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; margin-top: -1px;}
+        .card-valor { background-color: rgba(255,255,255,0.1); padding: 20px 40px; border-radius: 8px; text-align: center; min-width: 200px; border: 1px solid rgba(255,255,255,0.2); }
+        .chart-container { width: 350px; height: 180px; display: flex; justify-content: center; }
+
+        /* FILTROS */
+        .filtros-rapidos { display: flex; gap: 8px; margin-bottom: 25px; justify-content: center; flex-wrap: wrap; }
+        .btn-filtro { text-decoration: none; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; color: #555; background: white; border: 1px solid #ddd; transition: all 0.2s; white-space: nowrap; }
+        .btn-filtro:hover { transform: translateY(-2px); border-color: #aaa; background-color: #f8f9fa; }
+
+        /* TABELA */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        th, td { padding: 12px 10px; border-bottom: 1px solid #eee; text-align: left; vertical-align: middle; }
+        th { background-color: #f8f9fa; font-size: 0.75em; text-transform: uppercase; color: #495057; font-weight: 600; }
+        
+        /* BADGES */
+        .badge { padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.7em; text-transform: uppercase; color: white; display: inline-block; min-width: 90px; text-align: center; }
+        .status-NOVO_LEAD { background-color: #007bff; } 
+        .status-EM_CONVERSA { background-color: #fd7e14; }
+        .status-RESTRICAO { background-color: #000000; }
+        .status-FECHAMENTO { background-color: #2f4f2f; }
+        .status-REATIVACAO { background-color: #ffffff; color: #333; border: 1px solid #999; }
+        .status-APROVADO { background-color: #90ee90; color: #004d00; }
+        .status-ASSINATURA_CAIXA { background-color: #39ff14; color: black; box-shadow: 0 0 5px #39ff14; }
+        .status-ENTREGA_CHAVES { background-color: #39ff14; color: black; box-shadow: 0 0 5px #39ff14; }
+        .status-DESISTIU { background-color: #dc3545; }
+        .status-CONDICIONADO { background-color: #6c757d; }
+        .status-VENDA_FINALIZADA { background-color: #228b22; color: white; border: 2px solid #1e7e1e; }
+
+        /* ZAP ACTIONS */
+        .zap-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+        .btn-zap { text-decoration: none; font-size: 1.1em; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; border: 1px solid transparent; }
+        .btn-zap:hover { background-color: #f0f2f5; border-color: #ddd; transform: scale(1.1); }
+        
+        .obs-col { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help; color: #666; font-size: 0.9em; }
+        .btn-novo { background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+    </style>
+</head>
+<body></body>
+</html>
